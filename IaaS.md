@@ -220,3 +220,76 @@ router-id 2.2.2.2
 network 1.1.1.0 0.0.0.3 area 0
 network 192.168.20.0 0.0.0.255 area 0
 ```
+
+### Konfigurasi dalam kasus berbeda
+![Topologi 2](assets/topologi2.png)
+
+Pertama dalam kasus ini kita setting address terlebih dahulu dengan gateway .254 dan ip pertama x.1
+
+Router paling kiri :
+```bash
+enable
+conf t
+
+interface g0/0
+ip address 192.168.10.254 255.255.255.0
+no shutdown
+
+interface g1/0
+ip address 1.1.1.1 255.255.255.252
+no shutdown
+```
+
+Router tengah (ABR) :
+```bash
+enable
+conf t
+
+interface g0/0
+ip address 1.1.1.2 255.255.255.252
+no shutdown
+
+interface g1/0
+ip address 2.2.2.2 255.255.255.252
+no shutdown
+```
+
+Router paling kanan :
+```bash
+enable
+conf t
+
+interface g0/0
+ip address 2.2.2.1 255.255.255.252
+no shutdown
+
+interface g1/0
+ip address 192.168.20.1 255.255.255.0
+no shutdown
+```
+
+Lanjut untuk konfigurasi OSPF 
+Router paling kiri area 0:
+```bash
+router ospf 1
+router-id 2.2.2.2 #bebas
+network 192.168.10.0 0.0.0.255 area 0
+network 1.1.1.0 0.0.0.3 area 0
+```
+
+Router tengah (ABR) :
+```bash
+router ospf 1
+router-id 3.3.3.3
+
+network 1.1.1.0 0.0.0.3 area 0
+network 2.2.2.0 0.0.0.3 area 1
+```
+
+Router kanan area 1 :
+```bash
+router ospf 1
+router-id 4.4.4.4
+network 2.2.2.0 0.0.0.3 area 1
+network 192.168.20.0 0.0.0.255 area 1
+```
