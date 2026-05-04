@@ -167,3 +167,56 @@ Wild card bits = subnet mask(/32) - current subnet
     network 192.168.20.0
     end
 ```
+## Dynamic Routing OSPF
+OSPF adalah protokol routing link-state yang digunakan untuk menentukan jalur terbaik dalam jaringan IP. OSPF bekerja dengan algoritma Dijkstra (Shortest Path First / SPF) untuk mencari rute tercepat berdasarkan cost (biaya).
+
+### Komfigurasi di cisco packet tracer
+![Topologi](assets/topologi1.png)
+
+Langsung bagaimana cara konfigurasinya :
+
+Router 0 :
+```bash
+enable
+conf t
+
+interface gig0/0
+ip address 192.168.10.254 255.255.255.0
+no shutdown
+
+interface gig1/0
+ip address 1.1.1.1 255.255.255.252
+no shutdown
+```
+
+Router 1 :
+```bash
+enable
+conf t
+
+interface gig1/0
+ip address 192.168.20.254 255.255.255.0
+no shutdown
+
+interface gig0/0
+ip address 1.1.1.1 255.255.255.252
+no shutdown
+```
+
+Konfifurasi OSPF :
+
+Router 0
+```bash
+router ospf 1
+router-id 1.1.1.1
+network 192.168.10.0 0.0.0.255 area 0
+network 1.1.1.0 0.0.0.3 area 0
+```
+
+Router 1
+```bash
+router ospf 1
+router-id 2.2.2.2
+network 1.1.1.0 0.0.0.3 area 0
+network 192.168.20.0 0.0.0.255 area 0
+```
